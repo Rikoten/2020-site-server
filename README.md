@@ -15,6 +15,7 @@ $ docker run rikoten-site
 ## Using native Node.js
 
 ```
+$ git clone --depth 1 $(cat site-repo.conf) site
 $ npm i --production
 $ npm run start
 ```
