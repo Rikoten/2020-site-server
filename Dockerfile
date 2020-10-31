@@ -18,4 +18,4 @@ COPY tsconfig.json tsconfig.json
 # Ignore TypeScript compile error
 RUN npx tsc; exit 0
 
-CMD npm run start
+CMD node $(find dist -type f -name app.js)
