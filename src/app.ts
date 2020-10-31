@@ -7,11 +7,19 @@ import { add, match, revoke, Token } from './token'
 import firebaseConfig from '../firebase.json'
 firebase.initializeApp(firebaseConfig)
 
-import { like } from './likes'
+import { like, isReady, getLikes } from './likes'
 
 
 const app = express()
 app.use(cookieParser())
+
+app.use('*', async (req, res, next) => {
+    if (!isReady) {
+        res.sendStatus(500)
+        return
+    }
+    next()
+})
 
 app.use('/event/', async (req, res, next) => {
     await revoke(req.cookies['X-CSRF-Token'])
@@ -21,7 +29,11 @@ app.use('/event/', async (req, res, next) => {
     next()
 })
 
-app.get('/api/like/:eventId', async (req, res) => {
+app.get('/api/like', async (req, res) => {
+    res.send(await getLikes())
+})
+
+app.post('/api/like/:eventId', async (req, res) => {
     const token = req.cookies['X-CSRF-Token']
     const isRightToken = await match(token)
     if (!isRightToken) {
