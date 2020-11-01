@@ -7,16 +7,9 @@
 
 ### Using Docker
 
+Firebase の設定ファイルを `firebase.json` とする。
+
 ```
 $ docker build --tag rikoten-site .
-$ docker run rikoten-site
-```
-
-## Using native Node.js
-
-```
-$ git clone --depth 1 $(cat site-repo.conf) site
-$ npm i
-$ npm run build
-$ npm run start
+$ docker run -p 8080:8080 -d --name rikten-site --restart always rikoten-site
 ```

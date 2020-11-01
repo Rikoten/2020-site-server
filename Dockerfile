@@ -7,15 +7,16 @@ RUN apk add git
 COPY site-repo.conf site-repo.conf
 RUN git clone --depth 1 $(cat site-repo.conf) site
 
+RUN npm i -g typescript
+
 COPY package.json package.json
 COPY package-lock.json package-lock.json
-
+COPY tsconfig.json tsconfig.json
+COPY firebase.json firebase.json
 RUN npm i
 
 COPY src src
-COPY tsconfig.json tsconfig.json
 
-# Ignore TypeScript compile error
-RUN npx tsc; exit 0
+RUN tsc
 
-CMD node $(find dist -type f -name app.js)
+CMD node $(find . -type f -name app.js)
