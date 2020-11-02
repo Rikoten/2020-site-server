@@ -7,14 +7,15 @@ import { add, match, revoke, Token } from './token'
 import firebaseConfig from '../firebase.json'
 firebase.initializeApp(firebaseConfig)
 
-import { like, isReady, getLikes } from './likes'
+import { like, isReady as isLikesReady, getLikes } from './likes'
+import { isReady as isViewsReady, getViews, addViews } from './views'
 
 
 const app = express()
 app.use(cookieParser())
 
 app.use('*', async (req, res, next) => {
-    if (!isReady) {
+    if (!isLikesReady || !isViewsReady) {
         res.sendStatus(500)
         return
     }
@@ -25,7 +26,10 @@ app.use('/event/', async (req, res, next) => {
     await revoke(req.cookies['X-CSRF-Token'])
     const token = await Token.new()
     await add(token)
-    res.cookie('X-CSRF-Token', token.token)
+    res.cookie('X-CSRF-Token', token.token, {
+        httpOnly: true,
+        sameSite: 'strict'
+    })
     next()
 })
 
@@ -34,19 +38,55 @@ app.get('/api/like', async (req, res) => {
 })
 
 app.post('/api/like/:eventId', async (req, res) => {
+    const id = req.params['eventId']
+
     const token = req.cookies['X-CSRF-Token']
+    const liked = (req.cookies['X-Liked'] ?? '').split(',').find((it: any) => it == id)
+
     const isRightToken = await match(token)
-    if (!isRightToken) {
+    if (!isRightToken || liked) {
         res.sendStatus(403)
         return
     }
 
-    await like(req.params['eventId'])
+    await like(id)
     await revoke(token)
+
+    res.cookie('X-Liked', (req.cookies['X-Liked'] ?? '') + ',' + id, {
+        httpOnly: true,
+        sameSite: 'strict'
+    })
     res.sendStatus(200)
 })
 
+app.get('/api/views/:eventId', async (req, res) => {
+    const id = req.params['eventId']
+    res.send({
+        views: await getViews(id)
+    })
+})
+
+app.use('/event/', async (req, res, next) => {
+    const id = req.query.id
+    const viewed = (req.cookies['X-Viewed'] ?? '').split(',').find((it: any) => it == id)
+    if (viewed) {
+        next()
+        return
+    }
+
+    if (typeof id == 'string') await addViews(id)
+    res.cookie('X-Viewed', (req.cookies['X-Viewed'] ?? '') + ',' + id, {
+        httpOnly: true,
+        sameSite: 'strict'
+    })
+    next()
+})
+
 app.use(express.static('./site'))
+
+app.use('*', (req, res) => {
+    res.redirect('/')
+})
 
 app.listen(process.env.PORT || 8080, () => {
     console.log('Started')

@@ -31,7 +31,7 @@ export async function like(eventId: string): Promise<void> {
     cache[eventId].likes += 1
 
     if (Date.now() - writeCachedTime > WRITE_CACHE_SECONDS * 1000) {
-        console.log('firestore')
+        console.log('update likes firebase')
         await firestore.collection('likes').doc('likes').set(cache)
         writeCachedTime = Date.now()
     }

@@ -30,7 +30,7 @@ let tokens: Token[] = []
 export async function add(token: Token): Promise<void> {
     tokens.push(token)
     dropExpired()
-    console.log(tokens.map(it => it.token.slice(0, 10)))
+    console.log('tokens ' + tokens.length)
 }
 
 async function dropExpired() {
