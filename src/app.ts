@@ -17,7 +17,7 @@ const isIntime = () => (
 ) || (
     new Date('Sun, 08 Nov 2020 09:00:00 GMT +9').getTime() <= Date.now() &&
     Date.now() <= new Date('Sun, 08 Nov 2020 20:00:00 GMT +9').getTime()
-) || true
+)
 
 const app = express()
 app.use(cookieParser())
