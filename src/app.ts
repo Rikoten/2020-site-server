@@ -11,6 +11,14 @@ import { like, isReady as isLikesReady, getLikes } from './likes'
 import { isReady as isViewsReady, getViews, addViews } from './views'
 
 
+const isIntime = () => (
+    new Date('Sat, 07 Nov 2020 09:00:00 GMT +9').getTime() <= Date.now() &&
+    Date.now() <= new Date('Sat, 07 Nov 2020 20:00:00 GMT +9').getTime()
+) || (
+    new Date('Sun, 08 Nov 2020 09:00:00 GMT +9').getTime() <= Date.now() &&
+    Date.now() <= new Date('Sun, 08 Nov 2020 20:00:00 GMT +9').getTime()
+) || true
+
 const app = express()
 app.use(cookieParser())
 
@@ -20,6 +28,21 @@ app.use('*', async (req, res, next) => {
         return
     }
     next()
+})
+
+const overTimeRouter = express.Router()
+
+overTimeRouter.use(express.static('./site/overtime'))
+overTimeRouter.all('*', (req, res) => {
+    res.redirect('/')
+})
+
+app.use((req, res, next) => {
+    if (!isIntime()) {
+        overTimeRouter(req, res, next)
+    } else {
+        next()
+    }
 })
 
 app.use('/event/', async (req, res, next) => {
