@@ -51,6 +51,7 @@ app.use('/event/', async (req, res, next) => {
     await add(token)
     res.cookie('X-CSRF-Token', token.token, {
         httpOnly: true,
+        secure: true,
         sameSite: 'strict'
     })
     next()
@@ -77,6 +78,7 @@ app.post('/api/like/:eventId', async (req, res) => {
 
     res.cookie('X-Liked', (req.cookies['X-Liked'] ?? '') + ',' + id, {
         httpOnly: true,
+        secure: true,
         sameSite: 'strict'
     })
     res.sendStatus(200)
