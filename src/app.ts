@@ -102,6 +102,7 @@ app.use('/event/', async (req, res, next) => {
     if (typeof id == 'string') await addViews(id)
     res.cookie('X-Viewed', (req.cookies['X-Viewed'] ?? '') + ',' + id, {
         httpOnly: true,
+        secure: true,
         sameSite: 'strict'
     })
     next()
