@@ -10,6 +10,6 @@
 Firebase の設定ファイルを `firebase.json` とする。
 
 ```
-$ docker build --tag rikoten-site .
-$ docker run -p 8080:8080 -d --name rikten-site --restart always rikoten-site
+$ docker build --tag rikoten-site --no-cache .
+$ docker run -p 8080:8080 -d --name rikoten-site --restart always rikoten-site
 ```
