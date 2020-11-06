@@ -10,6 +10,15 @@ firebase.initializeApp(firebaseConfig)
 import { like, isReady as isLikesReady, getLikes } from './likes'
 import { isReady as isViewsReady, getViews, addViews } from './views'
 
+const cacheExtensions = [
+    '.png',
+    '.svg',
+    '.jpg',
+    '.css',
+    '.js',
+    '.json',
+    'common.html'
+]
 
 const isIntime = () => (
     new Date('Sat, 07 Nov 2020 09:00:00 GMT +9').getTime() <= Date.now() &&
@@ -21,6 +30,13 @@ const isIntime = () => (
 
 const app = express()
 app.use(cookieParser())
+
+app.get('*', (req, res, next) => {
+    if (cacheExtensions.some(ext => req.url.endsWith(ext))) {
+        res.header('Cache-Control', 'max-age=600')
+    }
+    next()
+})
 
 app.use('*', async (req, res, next) => {
     if (!isLikesReady || !isViewsReady) {
