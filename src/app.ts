@@ -7,6 +7,9 @@ import { add, match, revoke, Token } from './token'
 import firebaseConfig from '../firebase.json'
 firebase.initializeApp(firebaseConfig)
 
+// @ts-ignore events.json is not in the src directory
+import eventIds from '../events.json'
+
 import { like, isReady as isLikesReady, getLikes } from './likes'
 import { isReady as isViewsReady, getViews, addViews } from './views'
 
@@ -40,8 +43,7 @@ app.get('*', (req, res, next) => {
 
 app.use('*', async (req, res, next) => {
     if (!isLikesReady || !isViewsReady) {
-        res.sendStatus(500)
-        return
+        /* wait */
     }
     next()
 })
@@ -111,6 +113,11 @@ app.use('/event/', async (req, res, next) => {
     const id = req.query.id
     const viewed = (req.cookies['X-Viewed'] ?? '').split(',').find((it: any) => it == id)
     if (viewed) {
+        next()
+        return
+    }
+
+    if (!eventIds.includes(id as any)) {
         next()
         return
     }
