@@ -12,6 +12,7 @@ RUN npm i -g typescript
 COPY package.json package.json
 COPY package-lock.json package-lock.json
 COPY tsconfig.json tsconfig.json
+COPY events.json events.json
 COPY firebase.json firebase.json
 RUN npm i
 
