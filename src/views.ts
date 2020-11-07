@@ -25,6 +25,10 @@ export async function getViews(eventId: string): Promise<number> {
     return cache[eventId]?.views ?? 0
 }
 
+export async function getAllViews(): Promise<Views> {
+    return cache
+}
+
 export async function addViews(eventId: string): Promise<void>{
     if (!cache[eventId]) cache[eventId] = { views: 0 }
     cache[eventId].views += 1

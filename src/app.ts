@@ -11,7 +11,7 @@ firebase.initializeApp(firebaseConfig)
 import eventIds from '../events.json'
 
 import { like, isReady as isLikesReady, getLikes } from './likes'
-import { isReady as isViewsReady, getViews, addViews } from './views'
+import { isReady as isViewsReady, getViews, addViews, getAllViews } from './views'
 
 const cacheExtensions = [
     '.png',
@@ -107,6 +107,10 @@ app.get('/api/views/:eventId', async (req, res) => {
     res.send({
         views: await getViews(id)
     })
+})
+
+app.get('/api/views', async (req, res) => {
+    res.send(await getAllViews())
 })
 
 app.use('/event/', async (req, res, next) => {
